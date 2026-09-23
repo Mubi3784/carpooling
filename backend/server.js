@@ -6,45 +6,39 @@ const connectDB = require('./config/db');
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 // Initialize Express
 const app = express();
 
-// Allowed origins for CORS (Local + Production)
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  process.env.CLIENT_URL, // e.g. https://your-carpool-app.vercel.app
-].filter(Boolean);
-
+// CORS configuration (Local + Network + Production Vercel domains)
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, or Postman)
       if (!origin) return callback(null, true);
-
-      // 1. Allow any localhost or 127.0.0.1 port (5173, 4173, 3000, etc.)
       const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-
-      // 2. Allow any local network IP (e.g. 192.168.x.x, 10.x.x.x) on any port
       const isLocalNetwork = /^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin);
-
-      // 3. Allow production CLIENT_URL if defined in .env
+      const isVercel = /\.vercel\.app$/.test(origin);
       const isProduction = process.env.CLIENT_URL && origin === process.env.CLIENT_URL;
 
-      if (isLocalhost || isLocalNetwork || isProduction) {
+      if (isLocalhost || isLocalNetwork || isVercel || isProduction) {
         return callback(null, true);
       }
-
       return callback(new Error(`CORS policy: Origin ${origin} not allowed`));
     },
     credentials: true,
   })
-);  
+);
 
 app.use(express.json());
+
+// Ensure database connection is active before processing any API request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Database connection error' });
+  }
+});
 
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -59,17 +53,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Centralized Error Handling Middleware
+// Centralized error handler
 app.use((err, req, res, next) => {
-  console.error('Unhandled Server Error:', err.message);
+  console.error('Server Error:', err.message);
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
   });
 });
 
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(` Production server running on port ${PORT}`);
-});
+// Run local server when not in Vercel environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel Serverless
+module.exports = app;
