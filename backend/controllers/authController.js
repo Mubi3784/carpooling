@@ -1,15 +1,21 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+// Helper to determine role (considers ADMIN_EMAIL env)
+const resolveRole = (user) => {
+  if (
+    process.env.ADMIN_EMAIL &&
+    user?.email?.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()
+  ) {
+    return 'admin';
+  }
+  return user?.role || 'user';
+};
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
-    // 1. Check required fields
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -24,8 +30,9 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // 2. Check if user already exists
-    const userExists = await User.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(409).json({
         success: false,
@@ -33,19 +40,17 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // 3. Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // 4. Create user in MongoDB
+    // Passed plain password so the model's pre('save') hook hashes it once
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
-      password: hashedPassword,
-      phone: phone || '',
+      name: name.trim(),
+      email: normalizedEmail,
+      password,
+      phone: phone?.trim() || '',
+      role: 'user',
     });
 
-    // 5. Respond with user info and token
+    const userRole = resolveRole(user);
+
     res.status(201).json({
       success: true,
       data: {
@@ -55,10 +60,18 @@ const registerUser = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
+          role: userRole,
         },
       },
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email already exists',
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message || 'Server error during registration',
@@ -66,14 +79,10 @@ const registerUser = async (req, res) => {
   }
 };
 
-// @desc    Authenticate user & get token
-// @route   POST /api/auth/login
-// @access  Public
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Validate inputs
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -81,8 +90,10 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // 2. Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Explicitly select password in case schema has select: false
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -90,7 +101,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // 3. Verify password match
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -99,7 +109,8 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // 4. Return token and user details
+    const userRole = resolveRole(user);
+
     res.status(200).json({
       success: true,
       data: {
@@ -109,6 +120,7 @@ const loginUser = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
+          role: userRole,
         },
       },
     });
@@ -120,12 +132,17 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Get logged in user profile
-// @route   GET /api/auth/me
-// @access  Private (Requires JWT)
 const getMe = async (req, res) => {
   try {
-    // req.user is attached by the protect middleware
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+
+    const userRole = resolveRole(req.user);
+
     res.status(200).json({
       success: true,
       data: {
@@ -134,6 +151,7 @@ const getMe = async (req, res) => {
           name: req.user.name,
           email: req.user.email,
           phone: req.user.phone,
+          role: userRole,
           createdAt: req.user.createdAt,
         },
       },

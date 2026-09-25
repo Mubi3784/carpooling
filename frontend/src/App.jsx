@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import OfferRide from './pages/OfferRide';
 import MyRides from './pages/MyRides';
+import RoadStatus from './pages/RoadStatus'; // <-- NEW
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Feed />} />
           <Route path="/rides/:id" element={<RideDetails />} />
+          <Route path="/road-status" element={<RoadStatus />} /> {/* Public */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 

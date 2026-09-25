@@ -29,3 +29,26 @@ export const formatTime12Hour = (time24) => {
   const hour12 = h % 12 || 12;
   return `${hour12}:${minutes} ${ampm}`;
 };
+
+/**
+ * Formats ISO date to: "25 September 2026, 09:30 AM"
+ */
+export const formatRoadStatusDate = (isoString) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const day = date.getDate();
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  const formattedHours = String(hours).padStart(2, '0');
+
+  return `${day} ${month} ${year}, ${formattedHours}:${minutes} ${ampm}`;
+};

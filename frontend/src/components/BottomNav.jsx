@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Compass, PlusCircle, ListFilter, User } from 'lucide-react';
+import { Car, PlusCircle, ListFilter, User, Compass } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const BottomNav = () => {
@@ -16,11 +16,17 @@ const BottomNav = () => {
       <div className="flex justify-around items-center h-14">
         {/* Browse Rides */}
         <NavLink to="/" className={navClass} end>
-          <Compass className="w-5 h-5 mb-0.5" />
+          <Car className="w-5 h-5 mb-0.5" />
           <span>Browse</span>
         </NavLink>
 
-        {/* Offer Ride (Action) */}
+        {/* Road Status (NEW) */}
+        <NavLink to="/road-status" className={navClass}>
+          <Compass className="w-5 h-5 mb-0.5" />
+          <span>Roads</span>
+        </NavLink>
+
+        {/* Offer Ride */}
         <NavLink to="/offer-ride" className={navClass}>
           <PlusCircle className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span>Offer</span>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Car, PlusCircle, LogOut, LogIn, ListFilter } from 'lucide-react';
+import { Car, PlusCircle, LogOut, LogIn, ListFilter, Compass } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
@@ -28,6 +28,11 @@ const Navbar = () => {
           <Link to="/" className="hover:text-emerald-600 transition-colors">
             Browse Rides
           </Link>
+          {/* NEW: Road Status Nav Link */}
+          <Link to="/road-status" className="flex items-center gap-1.5 hover:text-emerald-600 transition-colors">
+            <Compass className="w-4 h-4 text-emerald-600" />
+            <span>Road Status</span>
+          </Link>
           <Link
             to="/offer-ride"
             className="flex items-center gap-1.5 hover:text-emerald-600 transition-colors"
@@ -51,7 +56,7 @@ const Navbar = () => {
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <span className="hidden sm:inline-block text-sm font-medium text-slate-700">
-                Hi, {user?.name?.split(' ')[0]}
+                Hi, {user?.name?.split(' ')[0]} {user?.role === 'admin' && <span className="text-xs bg-slate-900 text-white px-2 py-0.5 rounded-md ml-1 font-bold">Admin</span>}
               </span>
               <button
                 onClick={handleLogout}

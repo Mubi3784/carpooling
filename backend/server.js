@@ -36,13 +36,19 @@ app.use(async (req, res, next) => {
     await connectDB();
     next();
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Database connection error' });
+    console.error('Database connection error:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Database connection error',
+      details: err.message,
+    });
   }
 });
 
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/rides', require('./routes/rideRoutes'));
+app.use('/api/road-status', require('./routes/roadStatusRoutes')); // <-- NEW
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
