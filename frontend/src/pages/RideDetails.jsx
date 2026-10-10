@@ -15,6 +15,7 @@ import {
 import api from '../services/api';
 import { formatTime12Hour } from '../utils/dateUtils';
 import { useAuth } from '../context/AuthContext';
+import CommuteImpactBreakdown from '../components/CommuteImpactBreakdown';
 
 const RideDetails = () => {
   const { id } = useParams();
@@ -174,6 +175,9 @@ const RideDetails = () => {
             <p className="font-bold text-slate-900 text-base">{ride.driver?.name}</p>
           </div>
         </div>
+
+        {/* Commute Impact Breakdown */}
+        <CommuteImpactBreakdown ride={ride} />
 
         {/* Disclaimer Notice */}
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 leading-relaxed mb-6">

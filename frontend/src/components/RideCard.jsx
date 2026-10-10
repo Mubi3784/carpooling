@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ArrowRight, User, Car, Shield } from 'lucide-react';
 import { formatTime12Hour } from '../utils/dateUtils';
+import CommuteImpactBadge from './CommuteImpactBadge';
 
 const RideCard = ({ ride }) => {
   // Gender badge styling
@@ -69,6 +70,16 @@ const RideCard = ({ ride }) => {
           <Shield className="w-3 h-3" />
           <span>{ride.genderPreference}</span>
         </div>
+      </div>
+
+      {/* Commute Impact (savings vs solo ride-hailing + CO₂) */}
+      <div className="mb-4">
+        <CommuteImpactBadge
+          variant="compact"
+          pickup={ride.pickupLocation}
+          destination={ride.destination}
+          pricePerSeat={ride.pricePerSeat}
+        />
       </div>
 
       {/* Driver Footer */}

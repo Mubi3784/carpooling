@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 
 // Load environment variables
 dotenv.config();
+ 
 
 // Initialize Express
 const app = express();
@@ -69,7 +70,8 @@ app.use((err, req, res, next) => {
 });
 
 // Run local server when not in Vercel environment
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+// (skipped under NODE_ENV=test so supertest can use the exported app without opening a port)
+if (process.env.NODE_ENV !== 'test' && (process.env.NODE_ENV !== 'production' || !process.env.VERCEL)) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

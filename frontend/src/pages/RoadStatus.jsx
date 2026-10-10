@@ -13,7 +13,11 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import api from '../services/api';
-import { formatRoadStatusDate } from '../utils/dateUtils';
+import {
+  formatRoadStatusDate,
+  getRelativeTimeLabel,
+  isOlderThanHours,
+} from '../utils/dateUtils';
 import { useAuth } from '../context/AuthContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -26,6 +30,14 @@ const RoadStatus = () => {
   const [error, setError] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [showDisruptedOnly, setShowDisruptedOnly] = useState(false);
+
+  // Clock used for "Updated X minutes ago" labels; refreshed every minute
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Modal State for Admin (Add / Edit)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -151,7 +163,9 @@ const RoadStatus = () => {
   };
 
   // Filter in memory by search keyword
+  // (filtering keeps the server's CLOSED -> RESTRICTED -> OPEN priority order)
   const filteredRoads = roads.filter((r) => {
+    if (showDisruptedOnly && r.status === 'OPEN') return false;
     if (!searchKeyword.trim()) return true;
     return r.roadName.toLowerCase().includes(searchKeyword.toLowerCase());
   });
@@ -233,6 +247,32 @@ const RoadStatus = () => {
         ))}
       </div>
 
+      {/* Disruption Quick Filter */}
+      <div
+        role="group"
+        aria-label="Filter roads by disruption"
+        className="bg-slate-200/70 p-1.5 rounded-2xl flex items-center gap-1 mb-4 text-xs sm:text-sm"
+      >
+        {[
+          { key: false, label: 'All Roads' },
+          { key: true, label: 'Disrupted Only (Closed/Restricted)' },
+        ].map((option) => (
+          <button
+            key={option.label}
+            type="button"
+            aria-pressed={showDisruptedOnly === option.key}
+            onClick={() => setShowDisruptedOnly(option.key)}
+            className={`flex-1 py-2 font-semibold rounded-xl transition-all ${
+              showDisruptedOnly === option.key
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
       {/* Search Input */}
       <div className="relative mb-6">
         <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -308,6 +348,23 @@ const RoadStatus = () => {
                 </span>
               </div>
 
+              {/* Verification & Freshness Badges */}
+              {(road.verified || isOlderThanHours(road.updatedAt, 12, now)) && (
+                <div className="flex flex-wrap items-center gap-2 mb-2 ml-8">
+                  {road.verified && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      ✓ Verified Highway/Traffic Update
+                    </span>
+                  )}
+                  {isOlderThanHours(road.updatedAt, 12, now) && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-900 border border-amber-200">
+                      <span aria-hidden="true">⚠️&nbsp;</span>
+                      Status may be dated — verify locally
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Description / Reason */}
               {road.description && (
                 <p className="text-sm text-slate-600 mb-3 ml-8 leading-relaxed">
@@ -319,7 +376,12 @@ const RoadStatus = () => {
               <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs text-slate-500 ml-8">
                 <div className="flex items-center gap-1.5 text-slate-500">
                   <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Last updated: {formatRoadStatusDate(road.updatedAt)}</span>
+                  <span>
+                    <time dateTime={road.updatedAt} title={formatRoadStatusDate(road.updatedAt)}>
+                      {getRelativeTimeLabel(road.updatedAt, now)}
+                    </time>
+                    <span className="hidden sm:inline"> · {formatRoadStatusDate(road.updatedAt)}</span>
+                  </span>
                 </div>
 
                 {isAdmin && (
@@ -352,6 +414,8 @@ const RoadStatus = () => {
           <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
             {searchKeyword
               ? `No updates matching "${searchKeyword}".`
+              : showDisruptedOnly
+              ? 'No closed or restricted roads right now.'
               : 'No disruptions reported. Roads are moving normally.'}
           </p>
         </div>

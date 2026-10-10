@@ -1,5 +1,17 @@
 const RoadStatus = require('../models/RoadStatus');
 
+// Returns true when the populated author of a road update is an admin
+// (by stored role or by the ADMIN_EMAIL override). Author details are never exposed.
+const isAdminAuthor = (author) => {
+  if (!author) return false;
+  if (author.role === 'admin') return true;
+  return (
+    Boolean(process.env.ADMIN_EMAIL) &&
+    typeof author.email === 'string' &&
+    author.email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()
+  );
+};
+
 // @desc    Get all road statuses (Public)
 // @route   GET /api/road-status
 // @access  Public
@@ -15,7 +27,7 @@ const getRoadStatuses = async (req, res) => {
       query.roadName = { $regex: keyword, $options: 'i' };
     }
 
-    const roads = await RoadStatus.find(query).lean();
+    const roads = await RoadStatus.find(query).populate('updatedBy', 'role email').lean();
 
     // Priority sorting: CLOSED (1) -> RESTRICTED (2) -> OPEN (3), then by newest updatedAt
     const statusWeight = {
@@ -43,7 +55,9 @@ const getRoadStatuses = async (req, res) => {
         status: r.status,
         category: r.category,
         description: r.description,
+        createdAt: r.createdAt,
         updatedAt: r.updatedAt,
+        verified: isAdminAuthor(r.updatedBy),
       })),
     });
   } catch (error) {
