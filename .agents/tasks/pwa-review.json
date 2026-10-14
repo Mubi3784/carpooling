@@ -1,0 +1,9 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    "Non-blocking (likely): global 401 interceptor in api.js removes carpool_token but leaves AuthContext user set, so the UI looks logged in until reload; route through context logout or drop the interceptor.",
+    "Non-blocking (likely): isNetworkError treats any error without a response (including client-side TypeErrors) as offline; also check err.isAxiosError/err.request.",
+    "Non-blocking (possible, coder-reported): top safe-area inset sits on a non-sticky wrapper, so the sticky Navbar may slide under a notch; verify on a device."
+  ],
+  "reviewDoc": "d:\\Mubashir\\carpooling\\carpooling\\.agents\\tasks/pwa-review.md"
+}

@@ -20,6 +20,8 @@ import {
 } from '../utils/dateUtils';
 import { useAuth } from '../context/AuthContext';
 import ConfirmationModal from '../components/ConfirmationModal';
+import OfflineNotice from '../components/OfflineNotice';
+import { isNetworkError } from '../utils/networkError';
 
 const RoadStatus = () => {
   const { user } = useAuth();
@@ -28,6 +30,7 @@ const RoadStatus = () => {
   const [roads, setRoads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [offline, setOffline] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchKeyword, setSearchKeyword] = useState('');
   const [showDisruptedOnly, setShowDisruptedOnly] = useState(false);
@@ -63,6 +66,7 @@ const RoadStatus = () => {
   const fetchRoadStatuses = async () => {
     setLoading(true);
     setError('');
+    setOffline(false);
     try {
       const url =
         activeCategory === 'All'
@@ -72,6 +76,11 @@ const RoadStatus = () => {
       setRoads(res.data.data);
     } catch (err) {
       console.error(err);
+      if (isNetworkError(err)) {
+        setRoads([]);
+        setOffline(true);
+        return;
+      }
       setError('Unable to load road conditions. Please check your connection.');
     } finally {
       setLoading(false);
@@ -299,6 +308,8 @@ const RoadStatus = () => {
           <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-sm">Loading road updates...</p>
         </div>
+      ) : offline ? (
+        <OfflineNotice what="current road info" onRetry={fetchRoadStatuses} />
       ) : error ? (
         <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-sm text-center">
           {error}

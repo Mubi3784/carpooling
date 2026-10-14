@@ -12,7 +12,7 @@ const BottomNav = () => {
     }`;
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg px-2">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg px-2 pb-safe">
       <div className="flex justify-around items-center h-14">
         {/* Browse Rides */}
         <NavLink to="/" className={navClass} end>

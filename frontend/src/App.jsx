@@ -5,6 +5,9 @@ import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import NoticeModal from './components/NoticeModal';
 import ProtectedRoute from './components/ProtectedRoute';
+import OfflineBanner from './components/OfflineBanner';
+import UpdatePrompt from './components/UpdatePrompt';
+import InstallPrompt from './components/InstallPrompt';
 
 // Pages
 import Feed from './pages/Feed';
@@ -17,9 +20,15 @@ import RoadStatus from './pages/RoadStatus'; // <-- NEW
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col pb-16 md:pb-0 bg-slate-50">
-      {/* 1. Continuous Top Scrolling Announcement Bar */}
-      <TopAnnouncementBar />
+    <div className="min-h-screen flex flex-col pb-nav-safe md:pb-0 pl-safe pr-safe bg-slate-50">
+      {/* Top inset (notch) is applied once, above the first bar */}
+      <div className="pt-safe bg-slate-900">
+        {/* Offline notice (live data only) */}
+        <OfflineBanner />
+
+        {/* 1. Continuous Top Scrolling Announcement Bar */}
+        <TopAnnouncementBar />
+      </div>
 
       {/* 2. Top Navbar */}
       <Navbar />
@@ -58,6 +67,10 @@ function App() {
 
       {/* Sticky Mobile Bottom Navigation */}
       <BottomNav />
+
+      {/* PWA: install suggestion and update toast (update renders on top) */}
+      <InstallPrompt />
+      <UpdatePrompt />
     </div>
   );
 }

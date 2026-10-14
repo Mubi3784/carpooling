@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#059669"/>
+  <!-- Shared-ride mark: two passengers above the roof -->
+  <circle cx="226" cy="168" r="22" fill="#ffffff"/>
+  <circle cx="286" cy="168" r="22" fill="#ffffff"/>
+  <!-- Car body -->
+  <path fill="#ffffff" d="M150 300 L180 232 Q186 218 202 218 L310 218 Q326 218 334 232 L362 300 Q380 304 380 324 L380 346 Q380 356 370 356 L142 356 Q132 356 132 346 L132 324 Q132 304 150 300 Z"/>
+  <!-- Windows -->
+  <path fill="#059669" d="M178 298 L198 246 Q201 240 208 240 L250 240 L250 298 Z"/>
+  <path fill="#059669" d="M262 298 L262 240 L304 240 Q311 240 314 246 L334 298 Z"/>
+  <!-- Wheels -->
+  <circle cx="192" cy="356" r="30" fill="#ffffff" stroke="#059669" stroke-width="10"/>
+  <circle cx="320" cy="356" r="30" fill="#ffffff" stroke="#059669" stroke-width="10"/>
+</svg>

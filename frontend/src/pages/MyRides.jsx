@@ -4,11 +4,14 @@ import { Car, Clock, Calendar, Users, Trash2, PlusCircle, ArrowRight, AlertCircl
 import api from '../services/api';
 import { formatTime12Hour } from '../utils/dateUtils';
 import ConfirmationModal from '../components/ConfirmationModal';
+import OfflineNotice from '../components/OfflineNotice';
+import { isNetworkError } from '../utils/networkError';
 
 const MyRides = () => {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [offline, setOffline] = useState(false);
 
   // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -22,11 +25,17 @@ const MyRides = () => {
   const fetchMyRides = async () => {
     setLoading(true);
     setError('');
+    setOffline(false);
     try {
       const res = await api.get('/rides/my-rides');
       setRides(res.data.data);
     } catch (err) {
       console.error(err);
+      if (isNetworkError(err)) {
+        setRides([]);
+        setOffline(true);
+        return;
+      }
       setError('Unable to load your rides. Please try again.');
     } finally {
       setLoading(false);
@@ -106,6 +115,8 @@ const MyRides = () => {
           <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-sm">Loading your rides...</p>
         </div>
+      ) : offline ? (
+        <OfflineNotice what="your rides" onRetry={fetchMyRides} />
       ) : error ? (
         <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-sm text-center">
           {error}

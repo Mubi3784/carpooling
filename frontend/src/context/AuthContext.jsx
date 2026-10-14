@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
+import { isAuthError } from '../utils/networkError';
 
 const AuthContext = createContext();
 
@@ -17,8 +18,13 @@ export const AuthProvider = ({ children }) => {
           const res = await api.get('/auth/me');
           setUser(res.data.data.user);
         } catch (error) {
-          console.error('Session expired or invalid token:', error.response?.data?.message);
-          logout();
+          if (isAuthError(error)) {
+            console.error('Session expired or invalid token:', error.response?.data?.message);
+            logout();
+          } else {
+            // Network/server hiccup: keep the token so the next online load restores the session
+            console.warn('Could not verify session (keeping it):', error.message);
+          }
         }
       }
       setLoading(false);

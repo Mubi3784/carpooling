@@ -38,4 +38,17 @@ api.interceptors.request.use(
   }
 );
 
+// Interceptor: drop an expired/invalid token on 401 (no redirect or retry, so no loops)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const url = error.config?.url || '';
+    const isAuthForm = url.includes('/auth/login') || url.includes('/auth/register');
+    if (error.response?.status === 401 && !isAuthForm) {
+      localStorage.removeItem('carpool_token');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

@@ -16,6 +16,8 @@ import api from '../services/api';
 import { formatTime12Hour } from '../utils/dateUtils';
 import { useAuth } from '../context/AuthContext';
 import CommuteImpactBreakdown from '../components/CommuteImpactBreakdown';
+import OfflineNotice from '../components/OfflineNotice';
+import { isNetworkError } from '../utils/networkError';
 
 const RideDetails = () => {
   const { id } = useParams();
@@ -25,16 +27,24 @@ const RideDetails = () => {
   const [ride, setRide] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [offline, setOffline] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const fetchRideDetails = async () => {
       setLoading(true);
       setError('');
+      setOffline(false);
       try {
         const res = await api.get(`/rides/${id}`);
         setRide(res.data.data);
       } catch (err) {
         console.error(err);
+        if (isNetworkError(err)) {
+          setRide(null);
+          setOffline(true);
+          return;
+        }
         setError('This ride has already departed or has been cancelled by the driver.');
       } finally {
         setLoading(false);
@@ -42,7 +52,15 @@ const RideDetails = () => {
     };
 
     fetchRideDetails();
-  }, [id]);
+  }, [id, retryKey]);
+
+  if (!loading && offline) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-16">
+        <OfflineNotice what="this ride" onRetry={() => setRetryKey((k) => k + 1)} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (

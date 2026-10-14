@@ -10,7 +10,7 @@ const NoticeModal = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-fadeIn">
       {/* Full Page Modal Card */}
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 md:p-8 text-center">
+      <div className="relative w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 md:p-8 text-center">
         {/* Clearly Visible Close (×) Button */}
         <button
           onClick={closeNoticeModal}

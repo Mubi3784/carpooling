@@ -6,7 +6,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 p-6 text-center">
+      <div className="relative w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white rounded-2xl shadow-xl border border-slate-200 p-6 text-center">
         {/* Close Button */}
         <button
           onClick={onClose}

@@ -4,6 +4,8 @@ import { Calendar, Search, PlusCircle, Car, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 import RideCard from '../components/RideCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import OfflineNotice from '../components/OfflineNotice';
+import { isNetworkError } from '../utils/networkError';
 import { getTodayDateString, getTomorrowDateString } from '../utils/dateUtils';
 import {
   parseCommuteQuery,
@@ -22,6 +24,7 @@ const Feed = () => {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [offline, setOffline] = useState(false);
 
   // Fetch rides whenever date changes
   useEffect(() => {
@@ -31,11 +34,17 @@ const Feed = () => {
   const fetchRides = async (date) => {
     setLoading(true);
     setError('');
+    setOffline(false);
     try {
       const res = await api.get(`/rides?date=${date}`);
       setRides(res.data.data);
     } catch (err) {
       console.error(err);
+      if (isNetworkError(err)) {
+        setRides([]);
+        setOffline(true);
+        return;
+      }
       setError('Unable to load rides. Please check your connection.');
     } finally {
       setLoading(false);
@@ -239,6 +248,8 @@ const Feed = () => {
       {/* Rides List Section */}
       {loading ? (
         <LoadingSkeleton />
+      ) : offline ? (
+        <OfflineNotice what="current rides" onRetry={() => fetchRides(selectedDate)} />
       ) : error ? (
         <div className="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-center text-rose-700 text-sm">
           <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-500" />
