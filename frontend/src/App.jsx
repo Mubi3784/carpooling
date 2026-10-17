@@ -17,6 +17,16 @@ import Register from './pages/Register';
 import OfferRide from './pages/OfferRide';
 import MyRides from './pages/MyRides';
 import RoadStatus from './pages/RoadStatus'; // <-- NEW
+import RequestRide from './pages/RequestRide';
+import MyRequests from './pages/MyRequests';
+import Requests from './pages/Requests';
+import Matches from './pages/Matches';
+import Active from './pages/Active';
+import ChatList from './pages/ChatList';
+import ChatThread from './pages/ChatThread';
+import Profile from './pages/Profile';
+import RequestMatches from './pages/RequestMatches';
+import RideMatchingRequests from './pages/RideMatchingRequests';
 
 function App() {
   return (
@@ -62,6 +72,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/request-ride" element={<ProtectedRoute><RequestRide /></ProtectedRoute>} />
+          <Route path="/my-requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
+          <Route path="/requests/:id/matches" element={<ProtectedRoute><RequestMatches /></ProtectedRoute>} />
+          <Route path="/rides/:id/matching-requests" element={<ProtectedRoute><RideMatchingRequests /></ProtectedRoute>} />
+          <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
+          <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
+          <Route path="/active" element={<ProtectedRoute><Active /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><ChatList /></ProtectedRoute>} />
+          <Route path="/chat/:id" element={<ProtectedRoute><ChatThread /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </Routes>
       </main>
 

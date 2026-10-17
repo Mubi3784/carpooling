@@ -99,7 +99,7 @@ const Register = () => {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              WhatsApp Phone Number
+              Phone Number (private)
             </label>
             <input
               type="tel"

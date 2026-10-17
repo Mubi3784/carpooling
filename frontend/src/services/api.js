@@ -51,4 +51,53 @@ api.interceptors.response.use(
   }
 );
 
+export const createRides = (payload) => api.post('/rides', payload);
+export const getMyRides = () => api.get('/rides/my-rides');
+export const getRides = (params) => api.get('/rides', { params });
+export const deleteRide = (id) => api.delete(`/rides/${id}`);
+export const deleteRideSeries = (seriesId) =>
+  api.delete(`/rides/series/${encodeURIComponent(seriesId)}`);
+
+// Passenger requests (P3)
+export const createRequests = (payload) => api.post('/requests', payload);
+export const getMyRequests = () => api.get('/requests/mine');
+export const getRequests = (params) => api.get('/requests', { params });
+export const deleteRequest = (id) => api.delete(`/requests/${id}`);
+export const deleteRequestSeries = (seriesId) =>
+  api.delete(`/requests/series/${encodeURIComponent(seriesId)}`);
+export const getRidesForOffer = (requestId) => api.get(`/requests/${requestId}/rides-for-offer`);
+
+// Matching (P5)
+export const getRequestMatches = (id) => api.get(`/requests/${encodeURIComponent(id)}/matches`);
+export const getRequestMatchCounts = () => api.get('/requests/matches/counts');
+export const getRideMatchingRequests = (rideId) =>
+  api.get(`/rides/${encodeURIComponent(rideId)}/matching-requests`);
+
+// Offers / join requests (P3)
+export const createMatch = (payload) => api.post('/matches', payload);
+export const getMatches = (params) => api.get('/matches', { params });
+export const acceptMatch = (id) => api.post(`/matches/${id}/accept`);
+export const declineMatch = (id) => api.post(`/matches/${id}/decline`);
+export const cancelMatch = (id) => api.post(`/matches/${id}/cancel`);
+export const markMatchSeen = (id) => api.post(`/matches/${id}/seen`);
+export const getAlertCount = () => api.get('/matches/alerts/count');
+
+// Profile (private details live in local component state only)
+export const getProfile = () => api.get('/auth/profile');
+export const updateProfile = (payload) => api.patch('/auth/profile', payload);
+
+// Chat (P4)
+export const getConversations = () => api.get('/chat/conversations');
+export const getConversation = (id) => api.get(`/chat/conversations/${id}`);
+export const getMessages = (id, after) =>
+  api.get(`/chat/conversations/${id}/messages`, { params: after ? { after } : undefined });
+export const sendMessage = (id, payload) => api.post(`/chat/conversations/${id}/messages`, payload);
+export const reportMessage = (messageId, payload) => api.post(`/chat/messages/${messageId}/report`, payload);
+export const getChatUnread = () => api.get('/chat/unread-count');
+
+// Push (P4)
+export const getPushPublicKey = () => api.get('/push/public-key');
+export const pushSubscribe = (payload) => api.post('/push/subscribe', payload);
+export const pushUnsubscribe = (endpoint) => api.delete('/push/subscribe', { data: { endpoint } });
+
 export default api;

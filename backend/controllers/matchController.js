@@ -345,15 +345,17 @@ const acceptMatch = async (req, res) => {
       }
     }
 
+    let conversationId;
     try {
-      await chatHooks.createChatForMatch(claimed);
+      const conv = await chatHooks.createChatForMatch(claimed);
+      if (conv && conv._id) conversationId = String(conv._id);
     } catch (err) {
       // Never roll back an accepted match because the chat failed to open
       console.error('Chat creation failed:', err.message);
     }
     await push.notifyUser(match.initiatedBy === 'DRIVER' ? match.driver : match.passenger, 'update');
     const view = await viewById(match._id, req.user._id);
-    res.status(200).json({ success: true, message: 'Accepted. A seat is reserved.', data: view });
+    res.status(200).json({ success: true, message: 'Accepted. A seat is reserved.', data: view, ...(conversationId ? { conversationId } : {}) });
   } catch (error) {
     sendServerError(res, error, 'Server error accepting offer');
   }

@@ -1,0 +1,7 @@
+{
+  "blockingResolved": true,
+  "blockingFound": 0,
+  "blockingFixed": 0,
+  "blockingRemaining": 0,
+  "notes": "P0-P4 tested: backend 137/137, frontend 78/78 + lint 0 errors + build ok, live API e2e 288/288 (dev) and 290/290 (prod), Edge UI test passed (4 harness-only non-passes explained). 10 non-blocking findings; N1 (manual seat +/- can exceed capacity) needs a product decision before launch. See p0-p4-test-report.md"
+}

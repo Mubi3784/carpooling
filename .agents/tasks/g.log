@@ -1,0 +1,95 @@
+﻿D:\Mubashir\carpooling\carpooling\backend\controllers\cronController.js:10: const chatHooks = require('../utils/chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\controllers\cronController.js:53: add(await chatHooks.purgeConversations({ _id: { $in: ids } }));
+D:\Mubashir\carpooling\carpooling\backend\controllers\cronController.js:68: if (gone.length > 0) add(await chatHooks.purgeConversations({ _id: { $in: gone } }));
+D:\Mubashir\carpooling\carpooling\backend\controllers\cronController.js:102: await chatHooks.purgeChatsForRides(ids);
+D:\Mubashir\carpooling\carpooling\backend\controllers\matchController.js:6: const chatHooks = require('../utils/chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\controllers\matchController.js:269: const acceptMatch = async (req, res) => {
+D:\Mubashir\carpooling\carpooling\backend\controllers\matchController.js:350: const conv = await chatHooks.createChatForMatch(claimed);
+D:\Mubashir\carpooling\carpooling\backend\controllers\rideController.js:18: const chatHooks = require('../utils/chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\controllers\rideController.js:236: // (P3: shared with passenger requests: rides + requests count together)
+D:\Mubashir\carpooling\carpooling\backend\controllers\rideController.js:608: await chatHooks.purgeChatsForRides([ride._id]); // belt and braces after the cascade
+D:\Mubashir\carpooling\carpooling\backend\controllers\rideController.js:634: await chatHooks.purgeChatsForRides(targets.map((t) => t._id));
+D:\Mubashir\carpooling\carpooling\backend\controllers\rideController.js:653: // @desc    Passenger requests that could fit the caller's own ride (read-only, no contact data)
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:22: let chatHooks;
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:77: const conv = await chatHooks.createChatForMatch(match);
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:127: chatHooks = require('../utils/chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:184: await chatHooks.createChatForMatch(m); // PENDING: refused
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:188: await chatHooks.createChatForMatch(dec);
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:190: await chatHooks.createChatForMatch(can);
+D:\Mubashir\carpooling\carpooling\backend\tests\chat.test.js:197: await chatHooks.createChatForMatch(accepted); // idempotent
+D:\Mubashir\carpooling\carpooling\backend\tests\matching-endpoints.test.js:245: test('bike ride only sees single-passenger requests; own requests excluded', async () => {
+D:\Mubashir\carpooling\carpooling\backend\tests\push.test.js:25: let chatHooks;
+D:\Mubashir\carpooling\carpooling\backend\tests\push.test.js:85: const conv = await chatHooks.createChatForMatch(match);
+D:\Mubashir\carpooling\carpooling\backend\tests\push.test.js:105: chatHooks = require('../utils/chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\tests\requests-matches.test.js:2: * P3 tests: passenger requests + offer/join matches. In-memory MongoDB only.
+D:\Mubashir\carpooling\carpooling\backend\tests\requests-matches.test.js:19: let chatHooks;
+D:\Mubashir\carpooling\carpooling\backend\tests\requests-matches.test.js:126: chatHooks = require('../utils/chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\tests\requests-matches.test.js:503: const spy = jest.spyOn(chatHooks, 'purgeChatForMatch');
+D:\Mubashir\carpooling\carpooling\backend\tests\requests-matches.test.js:532: const spy = jest.spyOn(chatHooks, 'purgeChatForMatch');
+D:\Mubashir\carpooling\carpooling\backend\utils\chatAccess.js:5: const chatHooks = require('./chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\utils\chatAccess.js:45: await chatHooks.purgeConversations({ _id: conversation._id });
+D:\Mubashir\carpooling\carpooling\backend\utils\chatHooks.js:3: *  - createChatForMatch(match): called when a match becomes ACCEPTED (idempotent).
+D:\Mubashir\carpooling\carpooling\backend\utils\chatHooks.js:7: * Call sites must use `chatHooks.fn(...)` (not destructured) so tests can spy.
+D:\Mubashir\carpooling\carpooling\backend\utils\chatHooks.js:13: const createChatForMatch = async (match) => {
+D:\Mubashir\carpooling\carpooling\backend\utils\chatHooks.js:65: module.exports = { createChatForMatch, purgeChatForMatch, purgeChatsForRides, purgeConversations };
+D:\Mubashir\carpooling\carpooling\backend\utils\matchService.js:4: const chatHooks = require('./chatHooks');
+D:\Mubashir\carpooling\carpooling\backend\utils\matchService.js:121: await chatHooks.purgeChatForMatch(previous);
+D:\Mubashir\carpooling\carpooling\backend\utils\rideLimits.js:1: // Scheduling limits shared by driver rides (and later passenger requests).
+D:\Mubashir\carpooling\carpooling\backend\utils\rideLimits.js:3: // P3: the same single cap applies to a user's rides AND passenger requests combined
+D:\Mubashir\carpooling\carpooling\frontend\src\components\DiscoveryFeed.jsx:31: search: 'Search passenger requests by location, day or time',
+D:\Mubashir\carpooling\carpooling\frontend\src\components\DiscoveryFeed.jsx:32: loadError: 'Unable to load passenger requests. Please check your connection.',
+D:\Mubashir\carpooling\carpooling\frontend\src\components\DiscoveryFeed.jsx:33: offline: 'passenger requests',
+D:\Mubashir\carpooling\carpooling\frontend\src\components\DiscoveryFeed.jsx:34: noun: 'passenger requests',
+D:\Mubashir\carpooling\carpooling\frontend\src\components\MyRidesList.jsx:14: // Driver-mode shortcut to passenger requests that could fit this ride
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\Active.jsx:28: Browse Passenger Requests
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\MyRequests.jsx:8: <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">My Requests</h2>
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\MyRequests.jsx:10: <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">My Requests</h1>
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\OfferRide.jsx:141: // Navigate to My Rides upon success
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\RequestMatches.jsx:76: <ArrowLeft className="w-4 h-4" aria-hidden="true" /> My Requests
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\Requests.jsx:34: setError(err.response?.data?.message || 'Unable to load passenger requests.');
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\Requests.jsx:64: <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Passenger Requests</h1>
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\Requests.jsx:134: <OfflineNotice what="passenger requests" onRetry={() => fetchRequests(filters)} />
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\Requests.jsx:148: No passenger requests match right now. Try different filters later.
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\RideDetails.jsx:145: <span>Back to Available Rides</span>
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\RideMatchingRequests.jsx:71: <ArrowLeft className="w-4 h-4" aria-hidden="true" /> My Rides
+D:\Mubashir\carpooling\carpooling\frontend\src\pages\RideMatchingRequests.jsx:73: <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Matching passenger requests</h1>
+D:\Mubashir\carpooling\carpooling\frontend\src\services\api.js:61: // Passenger requests (P3)
+D:\Mubashir\carpooling\carpooling\frontend\src\services\api.js:79: export const acceptMatch = (id) => api.post(`/matches/${id}/accept`);
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:7: driver: 'carpool_home_tab_driver',
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:8: passenger: 'carpool_home_tab_passenger',
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:13: { id: 'my', label: 'My Rides' },
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:14: { id: 'feed', label: 'Passenger Requests' },
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:17: { id: 'my', label: 'My Requests' },
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:18: { id: 'feed', label: 'Available Rides' },
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:35: normalizeMode(mode) === 'passenger' && !isAuthenticated ? 'feed' : 'my';
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:124: if (tab === 'my') {
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:130: ? { title: 'No open passenger requests for this date', body: 'No passenger has asked for a ride on this date yet. Be the first to offer one!', ctaLabel: 'Offer a ride', ctaTo: '/offer-ride' }
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:138: ? 'Log in to browse passenger requests and offer your ride.'
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\homeTabs.js:141: return tab === 'feed' ? 'Log in to see available rides.' : 'Log in to see your ride requests.';
+D:\Mubashir\carpooling\carpooling\frontend\src\utils\requests.js:1: // Pure helpers for passenger requests (testable with node --test)
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:19: assert.deepEqual(tabsForMode('driver').map((t) => t.label), ['My Rides', 'Passenger Requests']);
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:20: assert.deepEqual(tabsForMode('passenger').map((t) => t.label), ['My Requests', 'Available Rides']);
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:21: assert.deepEqual(tabsForMode('garbage').map((t) => t.label), ['My Requests', 'Available Rides']);
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:25: assert.equal(defaultTab('driver', true), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:26: assert.equal(defaultTab('passenger', true), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:28: assert.equal(defaultTab('driver', false), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:29: assert.equal(resolveTab({ mode: 'driver', isAuthenticated: true, choice: null }), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:31: assert.equal(resolveTab({ mode: 'driver', isAuthenticated: true, choice: 'nope' }), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:35: assert.equal(HOME_TAB_KEYS.driver, 'carpool_home_tab_driver');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:36: assert.equal(HOME_TAB_KEYS.passenger, 'carpool_home_tab_passenger');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:43: writeTab(s, 'driver', 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:45: assert.equal(readTab(s, 'driver'), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:49: assert.equal(readTab(fakeStorage({ carpool_home_tab_driver: 'zzz' }), 'driver'), null);
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:55: assert.equal(resolveTab({ mode: 'driver', isAuthenticated: true, choice: readTab(throwingStorage, 'driver') }), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:63: for (const tab of ['my', 'feed']) {
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:79: assert.equal(nextTabId(tabs, 'my', 'ArrowRight'), 'feed');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:80: assert.equal(nextTabId(tabs, 'feed', 'ArrowRight'), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:81: assert.equal(nextTabId(tabs, 'my', 'ArrowLeft'), 'feed');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:82: assert.equal(nextTabId(tabs, 'feed', 'ArrowUp'), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:83: assert.equal(nextTabId(tabs, 'feed', 'Home'), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:84: assert.equal(nextTabId(tabs, 'my', 'End'), 'feed');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:85: assert.equal(nextTabId(tabs, 'my', 'x'), 'my');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:119: (({ title, ctaLabel, ctaTo }) => ({ title, ctaLabel, ctaTo }))(emptyStateFor({ mode: 'driver', tab: 'my' })),
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:122: const pm = emptyStateFor({ mode: 'passenger', tab: 'my' });
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:126: assert.equal(emptyStateFor({ mode: 'driver', tab: 'feed' }).title, 'No open passenger requests for this date');
+D:\Mubashir\carpooling\carpooling\frontend\tests\homeTabs.test.js:129: for (const tab of ['my', 'feed']) assert.ok(loginPromptFor({ mode, tab }).length > 10);

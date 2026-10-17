@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 import { isAuthError } from '../utils/networkError';
+import { toSafeUser } from '../utils/safeUser';
+
+// Global auth state holds ONLY { id, name, role }. Email/phone are fetched on demand (Profile) into local state.
 
 const AuthContext = createContext();
 
@@ -8,6 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('carpool_token') || null);
   const [loading, setLoading] = useState(true);
+  // Drop any stale stored user object from older builds (it may include phone/email)
+  try { localStorage.removeItem('carpool_user'); } catch { /* ignore */ }
   const [showNoticeModal, setShowNoticeModal] = useState(false);
 
   // Check if user is already logged in on initial load
@@ -16,7 +21,12 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const res = await api.get('/auth/me');
-          setUser(res.data.data.user);
+          const safe = toSafeUser(res.data.data.user);
+          if (!safe) {
+            logout();
+          } else {
+            setUser(safe);
+          }
         } catch (error) {
           if (isAuthError(error)) {
             console.error('Session expired or invalid token:', error.response?.data?.message);
@@ -36,31 +46,33 @@ export const AuthProvider = ({ children }) => {
   // Login handler
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    const { token: receivedToken, user: receivedUser } = res.data.data;
+    const { token: receivedToken, user: rawUser } = res.data.data;
+    const safeUser = toSafeUser(rawUser);
 
     localStorage.setItem('carpool_token', receivedToken);
     setToken(receivedToken);
-    setUser(receivedUser);
+    setUser(safeUser);
 
     // Trigger full-page trial notice overlay immediately after login (FR-NOTICE-01)
     setShowNoticeModal(true);
 
-    return receivedUser;
+    return safeUser;
   };
 
   // Register handler
   const register = async (name, email, password, phone) => {
     const res = await api.post('/auth/register', { name, email, password, phone });
-    const { token: receivedToken, user: receivedUser } = res.data.data;
+    const { token: receivedToken, user: rawUser } = res.data.data;
+    const safeUser = toSafeUser(rawUser);
 
     localStorage.setItem('carpool_token', receivedToken);
     setToken(receivedToken);
-    setUser(receivedUser);
+    setUser(safeUser);
 
     // Trigger full-page notice overlay after new account registration
     setShowNoticeModal(true);
 
-    return receivedUser;
+    return safeUser;
   };
 
   // Logout handler

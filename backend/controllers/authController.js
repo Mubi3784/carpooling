@@ -1,5 +1,7 @@
+const { sendServerError } = require('../utils/errorResponse');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const { sanitizePhoneNumber, isValidPhoneNumber } = require('../utils/phoneSanitizer');
 
 // Helper to determine role (considers ADMIN_EMAIL env)
 const resolveRole = (user) => {
@@ -58,8 +60,6 @@ const registerUser = async (req, res) => {
         user: {
           id: user._id,
           name: user.name,
-          email: user.email,
-          phone: user.phone,
           role: userRole,
         },
       },
@@ -72,10 +72,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Server error during registration',
-    });
+    sendServerError(res, error, 'Server error during registration');
   }
 };
 
@@ -118,17 +115,12 @@ const loginUser = async (req, res) => {
         user: {
           id: user._id,
           name: user.name,
-          email: user.email,
-          phone: user.phone,
           role: userRole,
         },
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Server error during login',
-    });
+    sendServerError(res, error, 'Server error during login');
   }
 };
 
@@ -149,18 +141,63 @@ const getMe = async (req, res) => {
         user: {
           id: req.user._id,
           name: req.user.name,
-          email: req.user.email,
-          phone: req.user.phone,
           role: userRole,
-          createdAt: req.user.createdAt,
         },
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Server error fetching profile',
+    sendServerError(res, error, 'Server error fetching profile');
+  }
+};
+
+// Private profile: the ONLY endpoint that returns contact details, and only the caller's own
+const profileView = (u) => ({ name: u.name, email: u.email, phone: u.phone || '' });
+
+// @desc    Caller's own profile
+// @route   GET /api/auth/profile
+const getProfile = async (req, res) => {
+  try {
+    res.status(200).json({ success: true, data: { profile: profileView(req.user) } });
+  } catch (error) {
+    sendServerError(res, error, 'Server error fetching profile');
+  }
+};
+
+// @desc    Update caller's name / phone (email is not editable)
+// @route   PATCH /api/auth/profile
+const updateProfile = async (req, res) => {
+  try {
+    const { name, phone } = req.body || {};
+    const update = {};
+    if (name !== undefined) {
+      const n = typeof name === 'string' ? name.trim() : '';
+      if (n.length < 2 || n.length > 50) {
+        return res.status(400).json({
+          success: false,
+          message: 'Name must be between 2 and 50 characters',
+        });
+      }
+      update.name = n;
+    }
+    if (phone !== undefined) {
+      if (typeof phone !== 'string') {
+        return res.status(400).json({ success: false, message: 'Please provide a valid phone number' });
+      }
+      if (phone.trim() === '') {
+        update.phone = '';
+      } else if (!isValidPhoneNumber(phone)) {
+        return res.status(400).json({ success: false, message: 'Please provide a valid phone number' });
+      } else {
+        update.phone = sanitizePhoneNumber(phone);
+      }
+    }
+    const user = await User.findByIdAndUpdate(req.user._id, { $set: update }, {
+      new: true,
+      runValidators: true,
     });
+    res.status(200).json({ success: true, data: { profile: profileView(user) } });
+  } catch (error) {
+    sendServerError(res, error, 'Server error updating profile');
   }
 };
 
@@ -168,4 +205,6 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  getProfile,
+  updateProfile,
 };

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, ArrowRight, User, Car, Shield } from 'lucide-react';
+import { Clock, ArrowRight, User, Car, Bike, Shield } from 'lucide-react';
 import { formatTime12Hour } from '../utils/dateUtils';
 import CommuteImpactBadge from './CommuteImpactBadge';
+import VehicleBadge from './VehicleBadge';
+import { normalizeVehicleType } from '../utils/vehicle';
 
-const RideCard = ({ ride }) => {
+const RideCard = ({ ride, isOwn = false }) => {
   // Gender badge styling
   const getGenderBadge = (preference) => {
     switch (preference) {
@@ -48,6 +50,8 @@ const RideCard = ({ ride }) => {
           <span>{formatTime12Hour(ride.departureTime)}</span>
         </div>
 
+        <VehicleBadge vehicleType={ride.vehicleType} />
+
         {/* Available Seats */}
         <div className="flex items-center gap-1.5">
           <span
@@ -89,11 +93,20 @@ const RideCard = ({ ride }) => {
             <User className="w-3 h-3" />
           </div>
           <span className="font-medium text-slate-700">{ride.driver?.name}</span>
+          {isOwn && (
+            <span className="px-2 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-700 text-[11px] font-semibold">
+              This is your ride
+            </span>
+          )}
         </div>
 
         {ride.carDetails && (
           <div className="flex items-center gap-1 text-slate-500 truncate max-w-[150px]">
-            <Car className="w-3.5 h-3.5 text-slate-400" />
+            {normalizeVehicleType(ride.vehicleType) === 'BIKE' ? (
+              <Bike className="w-3.5 h-3.5 text-slate-400" />
+            ) : (
+              <Car className="w-3.5 h-3.5 text-slate-400" />
+            )}
             <span className="truncate">{ride.carDetails}</span>
           </div>
         )}

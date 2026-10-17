@@ -1,3 +1,4 @@
+const { sendServerError } = require('../utils/errorResponse');
 const RoadStatus = require('../models/RoadStatus');
 
 // Returns true when the populated author of a road update is an admin
@@ -61,10 +62,7 @@ const getRoadStatuses = async (req, res) => {
       })),
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Error fetching road status updates',
-    });
+    sendServerError(res, error, 'Error fetching road status updates');
   }
 };
 
@@ -96,10 +94,7 @@ const createRoadStatus = async (req, res) => {
       data: road,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Error creating road status',
-    });
+    sendServerError(res, error, 'Error creating road status');
   }
 };
 
@@ -133,10 +128,7 @@ const updateRoadStatus = async (req, res) => {
       data: road,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Error updating road status',
-    });
+    sendServerError(res, error, 'Error updating road status');
   }
 };
 
@@ -160,10 +152,7 @@ const deleteRoadStatus = async (req, res) => {
       message: 'Road status removed successfully',
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Error deleting road status',
-    });
+    sendServerError(res, error, 'Error deleting road status');
   }
 };
 

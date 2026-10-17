@@ -7,22 +7,33 @@ import {
   Users,
   Car,
   Shield,
-  MessageCircle,
   AlertTriangle,
   User,
   Info,
 } from 'lucide-react';
-import api from '../services/api';
+import api, { createMatch, getMyRequests } from '../services/api';
+import { createClientRequestId } from '../utils/scheduling';
 import { formatTime12Hour } from '../utils/dateUtils';
 import { useAuth } from '../context/AuthContext';
 import CommuteImpactBreakdown from '../components/CommuteImpactBreakdown';
 import OfflineNotice from '../components/OfflineNotice';
 import { isNetworkError } from '../utils/networkError';
+import VehicleBadge from '../components/VehicleBadge';
+import { normalizeVehicleType } from '../utils/vehicle';
 
 const RideDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+
+  // Request to Join (P3)
+  const [joinClientId] = useState(() => createClientRequestId());
+  const [myRequests, setMyRequests] = useState([]);
+  const [joinRequestId, setJoinRequestId] = useState('');
+  const [joinCount, setJoinCount] = useState(1);
+  const [joining, setJoining] = useState(false);
+  const [joinMessage, setJoinMessage] = useState('');
+  const [joinError, setJoinError] = useState('');
 
   const [ride, setRide] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +64,53 @@ const RideDetails = () => {
 
     fetchRideDetails();
   }, [id, retryKey]);
+
+  const rideDate = ride?.rideDate;
+  const rideVehicle = ride?.vehicleType;
+  useEffect(() => {
+    if (!isAuthenticated || !rideDate) return;
+    let cancelled = false;
+    getMyRequests()
+      .then((res) => {
+        if (cancelled) return;
+        const type = normalizeVehicleType(rideVehicle);
+        setMyRequests(
+          res.data.data.filter(
+            (r) => r.status === 'ACTIVE' && r.requestDate === rideDate && r.vehiclePreference === type
+          )
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, rideDate, rideVehicle]);
+
+  const handleJoin = async () => {
+    if (joining) return;
+    setJoining(true);
+    setJoinError('');
+    setJoinMessage('');
+    try {
+      const linked = myRequests.find((r) => r.id === joinRequestId);
+      await createMatch({
+        rideId: ride.id,
+        ...(linked ? { requestId: linked.id } : { passengerCount: isBikeRide ? 1 : joinCount }),
+        clientMatchId: joinClientId,
+      });
+      setJoinMessage('Request sent. The driver can accept or decline. Track it in Offers & Requests.');
+    } catch (err) {
+      setJoinError(
+        isNetworkError(err)
+          ? 'No connection. Tap again to retry; it will not send twice.'
+          : err.response?.data?.message || 'Could not send your request.'
+      );
+    } finally {
+      setJoining(false);
+    }
+  };
+
+  const isBikeRide = normalizeVehicleType(ride?.vehicleType) === 'BIKE';
 
   if (!loading && offline) {
     return (
@@ -105,9 +163,12 @@ const RideDetails = () => {
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-6">
         {/* Route Details */}
         <div className="mb-6">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-            Route Details
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+              Route Details
+            </span>
+            <VehicleBadge vehicleType={ride.vehicleType} />
+          </div>
           <div className="mt-4 flex flex-col gap-4">
             <div className="flex items-start gap-3">
               <div className="w-3 h-3 rounded-full bg-emerald-500 mt-1.5 ring-4 ring-emerald-50 flex-shrink-0" />
@@ -165,7 +226,8 @@ const RideDetails = () => {
 
           <div>
             <p className="text-xs text-slate-400 flex items-center gap-1 mb-1">
-              <Car className="w-3.5 h-3.5" /> Vehicle
+              <Car className="w-3.5 h-3.5" />{' '}
+              {normalizeVehicleType(ride.vehicleType) === 'BIKE' ? 'Vehicle details' : 'Vehicle'}
             </p>
             <p className="font-semibold text-slate-800 truncate">
               {ride.carDetails || 'Not specified'}
@@ -203,26 +265,79 @@ const RideDetails = () => {
             <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
             Important Notice
           </p>
-          A listing on this platform does not guarantee a confirmed seat. Please coordinate directly with the driver via WhatsApp to confirm seat availability and pickup arrangements.
+          A listing on this platform does not guarantee a confirmed seat. Send a request to join; once the driver accepts, a seat is reserved and you can chat inside the app.
         </div>
 
-        {/* Contact Action */}
-        {isAuthenticated ? (
-          <a
-            href={ride.whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-sm sm:text-base"
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span>Contact Driver on WhatsApp</span>
-          </a>
-        ) : (
+        {/* Request to Join (logged-in non-owners) */}
+        {isAuthenticated && user && String(ride.driver?.id) !== String(user.id) && (
+          <div className="mb-4 p-4 border border-slate-200 rounded-2xl">
+            <p className="text-sm font-bold text-slate-900 mb-1">Request to Join</p>
+            <p className="text-xs text-slate-500 mb-3">
+              A request or offer does not guarantee a seat until accepted.
+            </p>
+            {ride.availableSeats <= 0 || ride.status !== 'ACTIVE' ? (
+              <p className="text-xs text-amber-800" role="status">
+                You cannot request this ride: it has no seats left.
+              </p>
+            ) : (
+              <>
+                {myRequests.length > 0 && (
+                  <div className="mb-3">
+                    <label htmlFor="joinRequest" className="block text-xs font-semibold text-slate-700 mb-1">
+                      Link one of your requests (optional)
+                    </label>
+                    <select
+                      id="joinRequest"
+                      value={joinRequestId}
+                      onChange={(e) => setJoinRequestId(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                    >
+                      <option value="">None</option>
+                      {myRequests.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.pickupLocation} to {r.destination}, {formatTime12Hour(r.departureTime)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {!isBikeRide && !joinRequestId && (
+                  <div className="mb-3 flex items-center gap-2">
+                    <label htmlFor="joinCount" className="text-xs font-semibold text-slate-700">Seats needed</label>
+                    <select
+                      id="joinCount"
+                      value={joinCount}
+                      onChange={(e) => setJoinCount(Number(e.target.value))}
+                      className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                    >
+                      {Array.from({ length: Math.min(6, ride.availableSeats) }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={handleJoin}
+                  disabled={joining || !!joinMessage}
+                  className="w-full py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-2xl transition text-sm disabled:opacity-50"
+                >
+                  {joining ? 'Sending...' : joinMessage ? 'Request sent' : 'Request to Join'}
+                </button>
+              </>
+            )}
+            {joinMessage && <p role="status" className="mt-2 text-xs text-emerald-800">{joinMessage}</p>}
+            {joinError && <p role="alert" className="mt-2 text-xs text-rose-700">{joinError}</p>}
+          </div>
+        )}
+
+        {/* Guests log in to send a request (no direct contact details are shown) */}
+        {!isAuthenticated && (
           <Link
             to="/login"
             className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-2xl transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
-            <span>Log in to Contact Driver</span>
+            <span>Log in to Request a Seat</span>
           </Link>
         )}
       </div>

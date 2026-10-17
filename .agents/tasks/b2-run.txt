@@ -1,0 +1,36 @@
+npm notice run carpool-backend@1.0.0 test
+npm notice run jest --runInBand
+PASS tests/chat.test.js (12.439 s)
+PASS tests/requests-matches.test.js (11.883 s)
+PASS tests/push.test.js (7.417 s)
+PASS tests/seat-race.test.js (6.442 s)
+  ● Console
+
+    console.error
+      Server error accepting offer: boom
+
+    [0m [90m 12 |[39m     [36mreturn[39m res[33m.[39mstatus([35m400[39m)[33m.[39mjson({ success[33m:[39m [36mfalse[39m[33m,[39m message })[33m;[39m
+     [90m 13 |[39m   }
+    [31m[1m>[22m[39m[90m 14 |[39m   console[33m.[39merror([32m`${fallbackMessage}:`[39m[33m,[39m error [33m&&[39m error[33m.[39mmessage)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 15 |[39m   [36mreturn[39m res[33m.[39mstatus([35m500[39m)[33m.[39mjson({ success[33m:[39m [36mfalse[39m[33m,[39m message[33m:[39m fallbackMessage })[33m;[39m
+     [90m 16 |[39m }[33m;[39m
+     [90m 17 |[39m[0m
+
+      at error (utils/errorResponse.js:14:11)
+      at sendServerError (controllers/matchController.js:358:5)
+
+PASS tests/api.test.js (5.93 s)
+  ● Console
+
+    console.log
+      ✅ MongoDB Connected: 127.0.0.1
+
+      at log (config/db.js:26:13)
+
+
+Test Suites: 5 passed, 5 total
+Tests:       137 passed, 137 total
+Snapshots:   0 total
+Time:        44.507 s
+Ran all test suites.

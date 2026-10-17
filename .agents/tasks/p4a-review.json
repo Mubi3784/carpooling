@@ -1,0 +1,9 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    "Request stuck MATCHED after cancel race (likely, non-blocking): a cancel between claimMatch and the RideRequest MATCHED update leaves the request MATCHED against a CANCELLED match. Re-check match status after the update and revert the request, or repair in reconcileSeats.",
+    "Manual updateSeats in rideController is a non-atomic read-modify-save of availableSeats (possible, non-blocking, outside A4 scope). Consider an atomic update.",
+    "A6 backfill script of seatsReserved for legacy ACCEPTED matches and cron wiring of reconcileSeats are not done (tracked). Must land before deploy."
+  ],
+  "reviewDoc": "d:\\Mubashir\\carpooling\\carpooling\\.agents\\tasks\\p4a-review.md"
+}

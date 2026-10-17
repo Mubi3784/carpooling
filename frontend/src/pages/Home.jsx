@@ -12,7 +12,7 @@ const Home = () => {
           <span className="text-primary">cut fuel costs.</span>
         </h1>
         <p className="text-slate-600 max-w-xl mx-auto mb-8 text-base md:text-lg">
-          Connect with drivers heading your way. No booking fees, coordinate directly on WhatsApp.
+          Connect with drivers heading your way. No booking fees. Request a seat and chat in the app once accepted.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
