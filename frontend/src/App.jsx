@@ -7,7 +7,7 @@ import NoticeModal from './components/NoticeModal';
 import ProtectedRoute from './components/ProtectedRoute';
 import OfflineBanner from './components/OfflineBanner';
 import UpdatePrompt from './components/UpdatePrompt';
-import InstallPrompt from './components/InstallPrompt';
+import InstallBanner from './components/InstallBanner';
 
 // Pages
 import Feed from './pages/Feed';
@@ -32,6 +32,9 @@ function App() {
 
       {/* 2. Top Navbar */}
       <Navbar />
+
+      {/* Mobile-only sticky install banner (sits in flow under the navbar) */}
+      <InstallBanner />
 
       {/* 3. Main Content Area */}
       <main className="flex-1">
@@ -68,8 +71,7 @@ function App() {
       {/* Sticky Mobile Bottom Navigation */}
       <BottomNav />
 
-      {/* PWA: install suggestion and update toast (update renders on top) */}
-      <InstallPrompt />
+      {/* PWA: update toast */}
       <UpdatePrompt />
     </div>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Car, PlusCircle, LogOut, LogIn, ListFilter, Compass } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import InstallButton from './InstallButton';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -52,7 +53,8 @@ const Navbar = () => {
         </nav>
 
         {/* Auth Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
+          <InstallButton variant="navbar" />
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <span className="hidden sm:inline-block text-sm font-medium text-slate-700">
@@ -71,14 +73,14 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors"
+                className="flex items-center gap-1 px-2 sm:px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors"
               >
                 <LogIn className="w-4 h-4" />
                 <span>Login</span>
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all shadow-sm"
+                className="px-3 sm:px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all shadow-sm"
               >
                 Register
               </Link>

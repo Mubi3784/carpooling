@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Car, PlusCircle } from 'lucide-react';
+import InstallSection from '../components/InstallSection';
 
 const Home = () => {
   return (
@@ -22,6 +23,9 @@ const Home = () => {
             Offer a Ride
           </Link>
         </div>
+      </div>
+      <div className="text-left">
+        <InstallSection />
       </div>
     </div>
   );

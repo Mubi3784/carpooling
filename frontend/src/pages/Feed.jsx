@@ -5,6 +5,7 @@ import api from '../services/api';
 import RideCard from '../components/RideCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import OfflineNotice from '../components/OfflineNotice';
+import InstallSection from '../components/InstallSection';
 import { isNetworkError } from '../utils/networkError';
 import { getTodayDateString, getTomorrowDateString } from '../utils/dateUtils';
 import {
@@ -158,6 +159,8 @@ const Feed = () => {
           <span>Offer Ride</span>
         </Link>
       </div>
+
+      <InstallSection />
 
       {/* Segmented Day Filters */}
       <div className="bg-slate-200/70 p-1.5 rounded-2xl flex items-center gap-1 mb-4">
