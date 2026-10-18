@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   Clock,
@@ -19,11 +19,14 @@ import CommuteImpactBreakdown from '../components/CommuteImpactBreakdown';
 import OfflineNotice from '../components/OfflineNotice';
 import { isNetworkError } from '../utils/networkError';
 import VehicleBadge from '../components/VehicleBadge';
+import ListingUnavailable from '../components/ListingUnavailable';
+import ShareWhatsAppButton from '../components/ShareWhatsAppButton';
 import { normalizeVehicleType } from '../utils/vehicle';
 
 const RideDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user } = useAuth();
 
   // Request to Join (P3)
@@ -131,20 +134,7 @@ const RideDetails = () => {
 
   if (error || !ride) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 text-center">
-        <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <AlertTriangle className="w-7 h-7" />
-        </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Ride Unavailable</h2>
-        <p className="text-sm text-slate-500 mb-6">{error}</p>
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Available Rides</span>
-        </Link>
-      </div>
+      <ListingUnavailable message={error || undefined} />
     );
   }
 
@@ -268,6 +258,12 @@ const RideDetails = () => {
           A listing on this platform does not guarantee a confirmed seat. Send a request to join; once the driver accepts, a seat is reserved and you can chat inside the app.
         </div>
 
+        {ride.status === 'ACTIVE' && ride.availableSeats > 0 && (
+          <div className="mb-4 flex justify-end">
+            <ShareWhatsAppButton kind="ride" item={ride} />
+          </div>
+        )}
+
         {/* Request to Join (logged-in non-owners) */}
         {isAuthenticated && user && String(ride.driver?.id) !== String(user.id) && (
           <div className="mb-4 p-4 border border-slate-200 rounded-2xl">
@@ -333,12 +329,21 @@ const RideDetails = () => {
 
         {/* Guests log in to send a request (no direct contact details are shown) */}
         {!isAuthenticated && (
-          <Link
-            to="/login"
-            className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-2xl transition flex items-center justify-center gap-2 text-sm sm:text-base"
-          >
-            <span>Log in to Request a Seat</span>
-          </Link>
+          <div>
+            <Link
+              to="/login"
+              state={{ from: location }}
+              className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-2xl transition flex items-center justify-center gap-2 text-sm sm:text-base"
+            >
+              <span>Log in to Request a Seat</span>
+            </Link>
+            <p className="mt-3 text-center text-sm text-slate-500">
+              New here?{' '}
+              <Link to="/register" state={{ from: location }} className="text-emerald-700 font-medium hover:underline">
+                Create an account
+              </Link>
+            </p>
+          </div>
         )}
       </div>
     </div>

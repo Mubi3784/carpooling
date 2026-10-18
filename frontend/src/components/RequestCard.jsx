@@ -3,6 +3,7 @@ import { ArrowRight, Calendar, Clock, User, Users } from 'lucide-react';
 import { formatDateChip } from '../utils/scheduling';
 import { formatTime12Hour } from '../utils/dateUtils';
 import VehicleBadge from './VehicleBadge';
+import ShareWhatsAppButton from './ShareWhatsAppButton';
 
 // One passenger request with the "Offer my ride" action (shared by Requests page and Home feed)
 const RequestCard = ({ request: r, onOffer }) => {
@@ -24,9 +25,12 @@ const RequestCard = ({ request: r, onOffer }) => {
         <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" aria-hidden="true" />{r.passenger?.name}</span>
       </div>
       {r.notes && <p className="text-sm text-slate-600 mb-3">{r.notes}</p>}
-      <button type="button" onClick={() => onOffer(r)} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium">
-        Offer my ride
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" onClick={() => onOffer(r)} className="min-h-[44px] px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium">
+          Offer my ride
+        </button>
+        <ShareWhatsAppButton kind="request" item={r} />
+      </div>
     </li>
   );
 };

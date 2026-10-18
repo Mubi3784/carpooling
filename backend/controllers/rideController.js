@@ -424,6 +424,9 @@ const getRides = async (req, res) => {
 // @access  Public (Enhanced for logged-in users)
 const getRideById = async (req, res) => {
   try {
+    if (typeof req.params.id !== 'string' || !mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Ride not found' });
+    }
     const ride = await Ride.findById(req.params.id)
       .populate('driver', 'name')
       .select('-whatsappNumber')
@@ -523,6 +526,9 @@ const updateSeats = async (req, res) => {
       });
     }
 
+    if (typeof req.params.id !== 'string' || !mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Ride not found' });
+    }
     const ride = await Ride.findById(req.params.id);
 
     if (!ride) {
@@ -583,6 +589,9 @@ const updateSeats = async (req, res) => {
 // @access  Private
 const deleteRide = async (req, res) => {
   try {
+    if (typeof req.params.id !== 'string' || !mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Ride not found' });
+    }
     const ride = await Ride.findById(req.params.id);
 
     if (!ride) {

@@ -4,6 +4,7 @@ import { Clock, ArrowRight, User, Car, Bike, Shield } from 'lucide-react';
 import { formatTime12Hour } from '../utils/dateUtils';
 import CommuteImpactBadge from './CommuteImpactBadge';
 import VehicleBadge from './VehicleBadge';
+import ShareWhatsAppButton from './ShareWhatsAppButton';
 import { normalizeVehicleType } from '../utils/vehicle';
 
 const RideCard = ({ ride, isOwn = false }) => {
@@ -20,10 +21,8 @@ const RideCard = ({ ride, isOwn = false }) => {
   };
 
   return (
-    <Link
-      to={`/rides/${ride.id}`}
-      className="block bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200"
-    >
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200">
+    <Link to={`/rides/${ride.id}`} className="block p-5 pb-3 rounded-t-2xl">
       {/* Route Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 text-base md:text-lg font-bold text-slate-900 tracking-tight">
@@ -112,6 +111,12 @@ const RideCard = ({ ride, isOwn = false }) => {
         )}
       </div>
     </Link>
+    {(ride.status ?? 'ACTIVE') === 'ACTIVE' && (
+      <div className="px-5 pb-4 flex justify-end">
+        <ShareWhatsAppButton kind="ride" item={ride} />
+      </div>
+    )}
+    </div>
   );
 };
 

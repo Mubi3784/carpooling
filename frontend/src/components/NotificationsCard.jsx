@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Bell } from 'lucide-react';
-import { currentPushState, enablePush, disablePush } from '../lib/push';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const MESSAGES = {
   unsupported: "This browser doesn't support notifications. The unread badge in the app still works.",
@@ -9,51 +9,7 @@ const MESSAGES = {
 };
 
 const NotificationsCard = () => {
-  const [state, setState] = useState('loading');
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-
-  useEffect(() => {
-    let alive = true;
-    currentPushState().then((s) => alive && setState(s));
-    return () => { alive = false; };
-  }, []);
-
-  const turnOn = async () => {
-    setBusy(true);
-    setStatus('');
-    try {
-      const r = await enablePush();
-      if (r.ok) {
-        setState('on');
-        setStatus('Notifications are on.');
-      } else if (r.reason === 'denied') {
-        setState('denied');
-      } else if (r.reason === 'server-not-configured') {
-        setStatus("Notifications aren't available right now.");
-      } else {
-        setStatus('Permission was not given, so notifications stay off.');
-      }
-    } catch {
-      setStatus("Couldn't turn on notifications. Please try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const turnOff = async () => {
-    setBusy(true);
-    setStatus('');
-    try {
-      await disablePush();
-      setState('off');
-      setStatus('Notifications are off.');
-    } catch {
-      setStatus("Couldn't turn off notifications. Please try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
+  const { state, busy, status, turnOn, turnOff } = usePushNotifications();
 
   return (
     <section className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm" aria-labelledby="notif-heading">

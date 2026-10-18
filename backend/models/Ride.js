@@ -61,6 +61,7 @@ const rideSchema = new mongoose.Schema(
       type: String,
       // Private to the driver: stored but never returned by any API
       trim: true,
+      select: false, // opt-in only via .select('+whatsappNumber')
     },
     genderPreference: {
       type: String,

@@ -62,6 +62,7 @@ export const deleteRideSeries = (seriesId) =>
 export const createRequests = (payload) => api.post('/requests', payload);
 export const getMyRequests = () => api.get('/requests/mine');
 export const getRequests = (params) => api.get('/requests', { params });
+export const getRequestById = (id) => api.get(`/requests/${encodeURIComponent(id)}`);
 export const deleteRequest = (id) => api.delete(`/requests/${id}`);
 export const deleteRequestSeries = (seriesId) =>
   api.delete(`/requests/series/${encodeURIComponent(seriesId)}`);

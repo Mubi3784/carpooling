@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { LogIn } from "lucide-react";
+import { resolvePostAuthTarget, savePostAuthRedirect } from "../utils/nav";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,13 @@ const Login = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
+
+  // Keep the target across a reload or a Login <-> Register hop
+  useEffect(() => {
+    savePostAuthRedirect(from);
+  }, [from]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +27,7 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate("/");
+      navigate(resolvePostAuthTarget(from), { replace: true });
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -91,6 +99,7 @@ const Login = () => {
           Don't have an account?{" "}
           <Link
             to="/register"
+            state={location.state}
             className="text-primary font-medium hover:underline"
           >
             Register here

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { UserPlus } from "lucide-react";
+import { resolvePostAuthTarget, savePostAuthRedirect } from "../utils/nav";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,13 @@ const Register = () => {
 
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
+
+  // Keep the target across a reload or a Login <-> Register hop
+  useEffect(() => {
+    savePostAuthRedirect(from);
+  }, [from]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,7 +45,7 @@ const Register = () => {
         formData.password,
         formData.phone,
       );
-      navigate("/");
+      navigate(resolvePostAuthTarget(from), { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
@@ -139,6 +147,7 @@ const Register = () => {
           Already have an account?{" "}
           <Link
             to="/login"
+            state={location.state}
             className="text-primary font-medium hover:underline"
           >
             Sign in

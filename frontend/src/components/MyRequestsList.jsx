@@ -8,6 +8,7 @@ import { formatTime12Hour } from '../utils/dateUtils';
 import ConfirmationModal from '../components/ConfirmationModal';
 import OfflineNotice from '../components/OfflineNotice';
 import VehicleBadge from '../components/VehicleBadge';
+import ShareWhatsAppButton from '../components/ShareWhatsAppButton';
 import { isNetworkError } from '../utils/networkError';
 
 const STATUS_STYLE = {
@@ -133,6 +134,7 @@ const MyRequestsList = ({ empty = DEFAULT_EMPTY }) => {
             Possible matches ({matchCounts[r.id].total})
           </Link>
         )}
+        {r.status === 'ACTIVE' && <ShareWhatsAppButton kind="request" item={r} />}
         {canCancel(r) && (
           <button type="button" onClick={() => setToDelete(r)} className="flex items-center gap-1 text-xs font-medium text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition">
             <Trash2 className="w-3.5 h-3.5" />

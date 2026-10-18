@@ -24,6 +24,11 @@ test('Feed is a thin tabbed orchestrator', () => {
   assert.doesNotMatch(feed, /api\.get\(|RideCard|'\/rides'/);
 });
 
+test('Feed renders NotificationBanner for logged-in users only (not while auth loads)', () => {
+  assert.match(feed, /import NotificationBanner from '\.\.\/components\/NotificationBanner'/);
+  assert.match(feed, /isAuthenticated && !authLoading && <NotificationBanner \/>/);
+});
+
 test('HomeTabs is an accessible tablist', () => {
   for (const s of ['role="tablist"', 'role="tab"', 'aria-selected', 'aria-controls', 'nextTabId', 'tabIndex']) {
     assert.ok(tabs.includes(s), `HomeTabs should contain ${s}`);

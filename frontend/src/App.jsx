@@ -25,6 +25,7 @@ import Active from './pages/Active';
 import ChatList from './pages/ChatList';
 import ChatThread from './pages/ChatThread';
 import Profile from './pages/Profile';
+import RequestDetails from './pages/RequestDetails';
 import RequestMatches from './pages/RequestMatches';
 import RideMatchingRequests from './pages/RideMatchingRequests';
 
@@ -75,6 +76,7 @@ function App() {
           <Route path="/request-ride" element={<ProtectedRoute><RequestRide /></ProtectedRoute>} />
           <Route path="/my-requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
           <Route path="/requests/:id/matches" element={<ProtectedRoute><RequestMatches /></ProtectedRoute>} />
+          <Route path="/requests/:id" element={<ProtectedRoute><RequestDetails /></ProtectedRoute>} />
           <Route path="/rides/:id/matching-requests" element={<ProtectedRoute><RideMatchingRequests /></ProtectedRoute>} />
           <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
           <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />

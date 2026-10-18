@@ -4,6 +4,7 @@ import InstallSection from '../components/InstallSection';
 import ModeSwitcher from '../components/ModeSwitcher';
 import ModeFab from '../components/ModeFab';
 import HomeTabs from '../components/HomeTabs';
+import NotificationBanner from '../components/NotificationBanner';
 import LoginPrompt from '../components/LoginPrompt';
 import MyRidesList from '../components/MyRidesList';
 import MyRequestsList from '../components/MyRequestsList';
@@ -78,6 +79,8 @@ const Feed = () => {
           You have {formatBadgeCount(alertCount)} new offer{alertCount === 1 ? '' : 's'} or request{alertCount === 1 ? '' : 's'}. View
         </Link>
       )}
+
+      {isAuthenticated && !authLoading && <NotificationBanner />}
 
       <HomeTabs
         tabs={tabs}

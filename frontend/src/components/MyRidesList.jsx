@@ -8,6 +8,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import OfflineNotice from '../components/OfflineNotice';
 import { isNetworkError } from '../utils/networkError';
 import VehicleBadge from '../components/VehicleBadge';
+import ShareWhatsAppButton from '../components/ShareWhatsAppButton';
 import { getMaxSeats } from '../utils/vehicle';
 import { useMode } from '../context/ModeContext';
 
@@ -209,6 +210,7 @@ const MyRidesList = ({ empty = DEFAULT_EMPTY }) => {
                             </div>
                             <div className="flex items-center gap-2">
                               <MatchingLink ride={ride} show={isDriver} />
+                              {ride.status === 'ACTIVE' && <ShareWhatsAppButton kind="ride" item={ride} />}
                               <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50 h-8">
                                 <button
                                   type="button"
@@ -303,7 +305,7 @@ const MyRidesList = ({ empty = DEFAULT_EMPTY }) => {
               </div>
 
               {/* Management Controls */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
                 {/* Seats Live Adjuster */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-600">Available Seats:</span>
@@ -333,6 +335,7 @@ const MyRidesList = ({ empty = DEFAULT_EMPTY }) => {
                 </div>
 
                 <MatchingLink ride={ride} show={isDriver} />
+                {ride.status === 'ACTIVE' && <ShareWhatsAppButton kind="ride" item={ride} />}
                 {/* Cancel / Delete Button */}
                 <button
                   type="button"
